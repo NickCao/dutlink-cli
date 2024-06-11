@@ -25,6 +25,13 @@ def add_command(
         itf = usb.util.find_descriptor(cfg, bInterfaceClass=0xFF, bInterfaceSubClass=0x1, bInterfaceProtocol=0x1)
         num = itf.bInterfaceNumber
         try:
+            if direction == usb.ENDPOINT_IN:
+                dev.ctrl_transfer(
+                    bmRequestType=usb.ENDPOINT_OUT | usb.TYPE_VENDOR | usb.RECIP_INTERFACE,
+                    wIndex=num,
+                    bRequest=0x00,
+                )
+
             op = actions.index(action)
             res = dev.ctrl_transfer(
                 bmRequestType=direction | usb.TYPE_VENDOR | usb.RECIP_INTERFACE,
