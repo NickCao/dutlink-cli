@@ -1,0 +1,80 @@
+#!/usr/bin/env python3
+
+import click
+import usb.core
+import usb.util
+
+
+def add_command(
+    base,
+    name,
+    actions,
+    ty,
+    direction=usb.ENDPOINT_OUT,
+    value_args=None,
+    value_mapper=lambda x: x,
+):
+    @click.command(name)
+    @click.argument("action", type=click.Choice(actions))
+    def command(action, value=None):
+        dev = usb.core.find(idVendor=0x2B23, idProduct=0x1012)
+        if dev is None:
+            click.echo("failed to find dutlink device")
+            return
+        # print(dev)
+        try:
+            op = actions.index(action)
+            res = dev.ctrl_transfer(
+                bmRequestType=direction | usb.TYPE_VENDOR | usb.RECIP_INTERFACE,
+                wIndex=0x03,
+                bRequest=ty,
+                wValue=op,
+                data_or_wLength=(value_mapper(value) if direction == usb.ENDPOINT_OUT else 512),
+            )
+            if direction == usb.ENDPOINT_IN:
+                click.echo(bytes(res).decode("utf-8"))
+        except Exception as e:
+            click.echo(f"failed {name} action: {action}, {e}")
+
+    if value_args is not None:
+        command = click.argument("value", **value_args)(command)
+
+    base.add_command(command)
+
+
+@click.group()
+def cli():
+    pass
+
+
+@click.group("config")
+def cfg():
+    pass
+
+
+cli.add_command(cfg)
+
+add_command(cli, "power", ["off", "on", "force-off", "force-on", "rescue"], 0x01)
+add_command(cli, "storage", ["off", "host", "dut"], 0x02)
+add_command(cli, "read", ["version", "power", "voltage", "current"], 0x04, usb.ENDPOINT_IN)
+
+pins = ["reset", "a", "b", "c", "d"]
+states = ["low", "high", "floating"]
+
+add_command(cli, "set", pins, 0x05, value_args={"type": click.Choice(states)}, value_mapper=lambda x: states.index(x))
+
+configs = [
+    "name",
+    "tags",
+    "json",
+    "usb_console",
+    "power_on",
+    "power_off",
+    "power_rescue",
+]
+
+add_command(cfg, "get", configs, 0x03, usb.ENDPOINT_IN)
+add_command(cfg, "set", configs, 0x03, value_args={})
+
+if __name__ == "__main__":
+    cli()
