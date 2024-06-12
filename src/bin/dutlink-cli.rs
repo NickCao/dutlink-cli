@@ -1,8 +1,5 @@
 use clap::{Parser, Subcommand};
-use dutlink_cli::pb::{
-    self, dutlink_service_client::DutlinkServiceClient, ConfigGetRequest, ConfigSetRequest,
-    PinRequest, PowerRequest, ReadRequest, StorageRequest,
-};
+use dutlink_cli::pb::{self, dutlink_service_client::DutlinkServiceClient};
 use tonic::transport::Channel;
 
 /// DUTLink CLI interface
@@ -16,13 +13,13 @@ struct Args {
 #[derive(Subcommand)]
 enum Commands {
     /// power control
-    Power { state: pb::PowerState },
+    Power(pb::PowerRequest),
     /// storage control
-    Storage { state: pb::StorageState },
+    Storage(pb::StorageRequest),
     /// read runtime value
-    Read { key: pb::ReadKey },
+    Read(pb::ReadRequest),
     /// set pin value
-    Pin { pin: pb::Pin, state: pb::PinState },
+    Pin(pb::PinRequest),
     /// manipulate config
     #[command(subcommand)]
     Config(ConfigCommands),
@@ -31,65 +28,40 @@ enum Commands {
 #[derive(Subcommand)]
 enum ConfigCommands {
     /// get config
-    Get { key: pb::ConfigKey },
+    Get(pb::ConfigGetRequest),
     /// set config
-    Set { key: pb::ConfigKey, value: String },
+    Set(pb::ConfigSetRequest),
 }
 
 #[tokio::main]
 async fn main() {
+    let args = Args::parse();
     let channel = Channel::builder("http://[::1]:9000".parse().unwrap())
         .connect()
         .await
         .unwrap();
     let mut client = DutlinkServiceClient::new(channel);
-    let args = Args::parse();
     match args.command {
-        Commands::Power { state } => {
-            client
-                .power(PowerRequest {
-                    state: state.into(),
-                })
-                .await
-                .unwrap();
+        Commands::Power(req) => {
+            client.power(req).await.unwrap();
         }
-        Commands::Storage { state } => {
-            client
-                .storage(StorageRequest {
-                    state: state.into(),
-                })
-                .await
-                .unwrap();
+        Commands::Storage(req) => {
+            client.storage(req).await.unwrap();
         }
-        Commands::Read { key } => {
-            let resp = client.read(ReadRequest { key: key.into() }).await.unwrap();
+        Commands::Read(req) => {
+            let resp = client.read(req).await.unwrap();
             println!("{}", resp.into_inner().value);
         }
-        Commands::Pin { pin, state } => {
-            client
-                .pin(PinRequest {
-                    pin: pin.into(),
-                    state: state.into(),
-                })
-                .await
-                .unwrap();
+        Commands::Pin(req) => {
+            client.pin(req).await.unwrap();
         }
         Commands::Config(config) => match config {
-            ConfigCommands::Get { key } => {
-                let resp = client
-                    .config_get(ConfigGetRequest { key: key.into() })
-                    .await
-                    .unwrap();
+            ConfigCommands::Get(req) => {
+                let resp = client.config_get(req).await.unwrap();
                 println!("{}", resp.into_inner().value);
             }
-            ConfigCommands::Set { key, value } => {
-                client
-                    .config_set(ConfigSetRequest {
-                        key: key.into(),
-                        value,
-                    })
-                    .await
-                    .unwrap();
+            ConfigCommands::Set(req) => {
+                client.config_set(req).await.unwrap();
             }
         },
     }
