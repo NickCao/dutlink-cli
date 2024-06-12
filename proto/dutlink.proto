@@ -46,34 +46,34 @@ message PinRequest {
 }
 
 enum PowerState {
-  PowerOff      = 0;
-  PowerOn       = 1;
-  PowerForceOff = 2;
-  PowerForceOn  = 3;
-  PowerRescue   = 4;
+  PowerStateOff      = 0;
+  PowerStateOn       = 1;
+  PowerStateForceOff = 2;
+  PowerStateForceOn  = 3;
+  PowerStateRescue   = 4;
 }
 
 enum StorageState {
-  StorageOff  = 0;
-  StorageHost = 1;
-  StorageDut  = 2;
+  StorageStateOff  = 0;
+  StorageStateHost = 1;
+  StorageStateDut  = 2;
 }
 
 enum ConfigKey {
-  ConfigName        = 0;
-  ConfigTags        = 1;
-  ConfigJson        = 2;
-  ConfigUsbConsole  = 3;
-  ConfigPowerOn     = 4;
-  ConfigPowerOff    = 5;
-  ConfigPowerRescue = 6;
+  ConfigKeyName        = 0;
+  ConfigKeyTags        = 1;
+  ConfigKeyJson        = 2;
+  ConfigKeyUsbConsole  = 3;
+  ConfigKeyPowerOn     = 4;
+  ConfigKeyPowerOff    = 5;
+  ConfigKeyPowerRescue = 6;
 }
 
 enum ReadKey {
-  ReadVersion = 0;
-  ReadPower   = 1;
-  ReadVoltage = 2;
-  ReadCurrent = 3;
+  ReadKeyVersion = 0;
+  ReadKeyPower   = 1;
+  ReadKeyVoltage = 2;
+  ReadKeyCurrent = 3;
 }
 
 enum Pin {

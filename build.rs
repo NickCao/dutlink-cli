@@ -1,4 +1,6 @@
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    tonic_build::compile_protos("proto/dutlink.proto")?;
+    tonic_build::configure()
+        .enum_attribute(".", "#[derive(clap::ValueEnum)]")
+        .compile(&["proto/dutlink.proto"], &["proto"])?;
     Ok(())
 }
