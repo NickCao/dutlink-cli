@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+service DutlinkService {
+  rpc Power(PowerRequest) returns (google.protobuf.Empty);
+  rpc Storage(StorageRequest) returns (google.protobuf.Empty);
+  rpc ConfigSet(ConfigSetRequest) returns (google.protobuf.Empty);
+  rpc ConfigGet(ConfigGetRequest) returns (ConfigGetResponse);
+  rpc Read(ReadRequest) returns (ReadResponse);
+  rpc Pin(PinRequest) returns (google.protobuf.Empty);
+}
+
+message PowerRequest {
+  PowerState state = 1;
+}
+
+message StorageRequest {
+  StorageState state = 1;
+}
+
+message ConfigSetRequest {
+  ConfigKey key = 1;
+  string  value = 2;
+}
+
+message ConfigGetRequest {
+  ConfigKey key = 1;
+}
+
+message ConfigGetResponse {
+  string value = 1;
+}
+
+message ReadRequest {
+  ReadKey key = 1;
+}
+
+message ReadResponse {
+  string value = 1;
+}
+
+message PinRequest {
+  Pin        pin = 1;
+  PinState state = 2;
+}
+
+enum PowerState {
+  PowerOff      = 0;
+  PowerOn       = 1;
+  PowerForceOff = 2;
+  PowerForceOn  = 3;
+  PowerRescue   = 4;
+}
+
+enum StorageState {
+  StorageOff  = 0;
+  StorageHost = 1;
+  StorageDut  = 2;
+}
+
+enum ConfigKey {
+  ConfigName        = 0;
+  ConfigTags        = 1;
+  ConfigJson        = 2;
+  ConfigUsbConsole  = 3;
+  ConfigPowerOn     = 4;
+  ConfigPowerOff    = 5;
+  ConfigPowerRescue = 6;
+}
+
+enum ReadKey {
+  ReadVersion = 0;
+  ReadPower   = 1;
+  ReadVoltage = 2;
+  ReadCurrent = 3;
+}
+
+enum Pin {
+  PinReset = 0;
+  PinA     = 1;
+  PinB     = 2;
+  PinC     = 3;
+  PinD     = 4;
+}
+
+enum PinState {
+  PinStateLow      = 0;
+  PinStateHigh     = 1;
+  PinStateFloating = 2;
+}
