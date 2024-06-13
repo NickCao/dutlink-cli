@@ -11,8 +11,16 @@ use crate::pb;
     kind = "DutLink",
     namespaced
 )]
+#[kube(status = "DutLinkStatus")]
 pub struct DutLinkSpec {
     pub name: String,
     pub power: pb::PowerState,
     pub storage: pb::StorageState,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, JsonSchema)]
+pub struct DutLinkStatus {
+    pub version: String,
+    pub voltage: String,
+    pub current: String,
 }

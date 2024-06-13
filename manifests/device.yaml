@@ -4,5 +4,5 @@ metadata:
   name: test-device
 spec:
   name: test-device-2
-  power: "Off"
+  power: "On"
   storage: "Host"
