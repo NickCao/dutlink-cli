@@ -1,0 +1,101 @@
+# DUT specification
+spec:
+  # which host is the dut connected to
+  node: test-dut-host
+  name: test-device
+  # how to access the dut from the host
+  access:
+    power:
+      pdu0:
+        method: <some pdu brand>
+        config:
+          address: pdu.example.com:9000
+          username: admin
+          password: pass
+          port: 3
+      pdu1:
+        method: dutlink
+        config:
+          name: test-device
+    storage:
+      sdcard0:
+        method: sdwire
+        config:
+          bus: 007
+          device: 003
+      usb0:
+        method: dutlink
+        config:
+          name: test-device
+    serial:
+      uart0:
+        method: local
+        config:
+          device: /dev/ttyUSB0
+    video:
+      hdmi0:
+        method: v4l2
+        config:
+          device: /dev/video0
+    gpio:
+      gpio0:
+        method: sysfs
+        config:
+          chip: 3
+  # the desired state of the dut
+  state:
+    power:
+      pdu0:
+        state: "Off"
+      pdu1:
+        state: "On"
+    storage:
+      sdcard0:
+        enabled: false
+      usb0:
+        enabled: true
+        state: "Image"
+        source: "https://example.com/sdcard.img"
+    serial:
+      uart0:
+        enabled: true
+        baudrate: 115200
+        parity: 1
+    video:
+      hdmi0:
+        framerate: 24
+    gpio:
+      gpio0:
+        ports:
+          0: "Low"
+          1: "High"
+          2: "Input"
+          3: "Floating"
+          4: "Input"
+status:
+  health: <healthy/maintenance/broken>
+  # expose information for structured data and OOB access
+  access:
+    serial:
+      uart0:
+        method: telnet
+        config:
+          host: telnet.example.com
+          port: 23
+          user: admin
+          pass: randompass
+    video:
+      hdmi0:
+        method: vnc
+        config:
+          scheme: https
+          host: vnc.example.com
+          port: 443
+          path: /test-device
+          user: admin
+          pass: randompass
+    gpio:
+      gpio0:
+        ports:
+          2: "Low"
+          4: "High"
