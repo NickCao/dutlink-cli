@@ -1,0 +1,6 @@
+apiVersion: jumpstarter.example.com/v1
+kind: DutLink
+metadata:
+  name: test-device
+spec:
+  name: test-device
