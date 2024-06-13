@@ -3,4 +3,6 @@ kind: DutLink
 metadata:
   name: test-device
 spec:
-  name: test-device
+  name: test-device-2
+  power: "ForceOn"
+  storage: "Dut"

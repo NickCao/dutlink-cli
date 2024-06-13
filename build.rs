@@ -2,6 +2,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     tonic_build::configure()
         .message_attribute(".", "#[derive(clap::Args)]")
         .enum_attribute(".", "#[derive(clap::ValueEnum)]")
+        .enum_attribute(".", "#[derive(schemars::JsonSchema)]")
+        .enum_attribute(".", "#[derive(serde::Serialize, serde::Deserialize)]")
         .field_attribute(
             ".PowerRequest.state",
             "#[arg(value_parser = clap::builder::EnumValueParser::<PowerState>::new())]",
